@@ -8,9 +8,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage"
   },
   "devDependencies": {
+    "@vitest/coverage-istanbul": "3.2.4",
+    "jsdom": "^26.1.0",
     "prettier": "3.6.2",
     "vite": "^5.0.0",
     "vitest": "^3.2.4"
