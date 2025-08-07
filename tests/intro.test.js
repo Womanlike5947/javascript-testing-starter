@@ -1,6 +1,6 @@
 // test and it are aliases for the same function
 import { describe, test, it, expect } from "vitest";
-import { calculateAverage, fizzBuzz, max } from "../src/intro";
+import { calculateAverage, factorial, fizzBuzz, max } from "../src/intro";
 
 describe("max", () => {
   test("should return the first argument if it is greater", () => {
@@ -61,5 +61,36 @@ describe("calculateAverage", () => {
 
   test("should calculate the average of an array with multiple elements", () => {
     expect(calculateAverage([1, 2, 3, 4, 5])).toBe(3);
+  });
+});
+
+// Test-Driven Development Example
+describe("factorial", () => {
+  test("should render negative numbers as undefined", () => {
+    expect(factorial(-1)).toBeUndefined();
+  });
+
+  test("should render 0 as 1", () => {
+    expect(factorial(0)).toBe(1);
+  });
+
+  test("should render 1 as 1", () => {
+    expect(factorial(1)).toBe(1);
+  });
+
+  test("should render 2 as 2", () => {
+    expect(factorial(2)).toBe(2);
+  });
+
+  test("should render 3 as 6", () => {
+    expect(factorial(3)).toBe(6);
+  });
+
+  test("should render 4 as 24", () => {
+    expect(factorial(4)).toBe(24);
+  });
+
+  test("should render 5 as 120", () => {
+    expect(factorial(5)).toBe(120);
   });
 });

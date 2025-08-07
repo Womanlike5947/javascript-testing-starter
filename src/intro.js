@@ -20,3 +20,15 @@ export function calculateAverage(numbers) {
   // if(numbers.length === 1) return
   // return numbers[0];
 }
+
+// Test-Driven Development Example
+export function factorial(n) {
+  if (n < 0) return undefined;
+  if (n <= 1) return 1;
+  let result = n;
+  while (n > 1) {
+    n--;
+    result = result * n;
+  }
+  return result;
+}
