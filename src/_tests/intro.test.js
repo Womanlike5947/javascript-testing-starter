@@ -1,6 +1,6 @@
 // test and it are aliases for the same function
 import { describe, test, it, expect } from "vitest";
-import { calculateAverage, factorial, fizzBuzz, max } from "../src/intro";
+import { calculateAverage, factorial, fizzBuzz, max } from "../intro";
 
 describe("max", () => {
   test("should return the first argument if it is greater", () => {
