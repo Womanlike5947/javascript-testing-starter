@@ -10,3 +10,13 @@ export function fizzBuzz(n) {
   if (n % 5 === 0) return "Buzz";
   return n.toString();
 }
+
+// Test-Driven Development Test Example
+export function calculateAverage(numbers) {
+  if (numbers.length === 0) return NaN;
+  const sum = numbers.reduce((sum, current) => sum + current, 0);
+  return sum / numbers.length;
+
+  // if(numbers.length === 1) return
+  // return numbers[0];
+}
