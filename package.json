@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "coverage": "vitest --coverage"
   },
   "devDependencies": {
     "@vitest/coverage-istanbul": "3.2.4",
