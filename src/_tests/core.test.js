@@ -1,55 +1,105 @@
 import { describe, expect, test } from "vitest";
+import { calculateDiscount, getCoupons, validateUserInput } from "../core";
 
-describe("test suite", () => {
-  describe("Using Matchers", () => {
-    test("should render 'Holly' as a string", () => {
-      const result = "Holly";
-      // toBe checks for strict equality (E.g. Primitives (strings, Numbers, Booleans, etc.))
-      expect(result).toBe("Holly");
-    });
+describe("getCoupons", () => {
+  test("should return an array of coupons", () => {
+    const coupons = getCoupons();
+    expect(Array.isArray(coupons)).toBeTruthy();
+    expect(coupons.length).toBeGreaterThan(0); // My implementation
+    expect(coupons).toHaveLength(2); // Could you this, but might be classed as a 'tight' assertion
+  });
 
-    test("should render 'Holly' in an object", () => {
-      const result = { name: "Holly" };
-      // toEqual checks for deep equality (E.g. Objects, Arrays, etc.)
-      expect(result).toEqual({ name: "Holly" });
+  test("should return an array with valid coupon codes", () => {
+    const coupons = getCoupons();
+    coupons.forEach((coupon) => {
+      expect(coupon).toHaveProperty("code");
+      expect(typeof coupon.code).toBe("string");
+      expect(coupon.code.length).toBeTruthy();
     });
   });
 
-  describe("Writing Good Assertions", () => {
-    test("should return the correct error message", () => {
-      const result = "The requested file was not found.";
-      // Loose assertion (too general)
-      expect(result).toBeDefined();
-      // Tight assertion (too specific)
-      expect(result).toBe("The requested file was not found.");
-      // Better assertion (just right)
-      expect(result).toMatch("not found"); // string
-      expect(result).toMatch(/not found/); // regular expression (regex)
-      expect(result).toMatch(/not found/i); // regular expression (regex) - case-insensitive
+  test("should return an array with valid discounts", () => {
+    const coupons = getCoupons();
+    coupons.forEach((coupon) => {
+      expect(coupon).toHaveProperty("discount");
+      expect(typeof coupon.discount).toBe("number");
+      expect(coupon.discount).toBeTruthy();
     });
+  });
 
-    test("should return an array of numbers", () => {
-      const result = [1, 2, 3];
-      // Loose assertion (too general)
-      expect(result).toBeDefined();
-      // Tight assertion (too specific)
-      expect(result).toEqual([1, 2, 3]);
-      // Better assertion (just right)
-      expect(result).toContain(2);
-      expect(result).toHaveLength(3);
-      expect(result.length).toBeGreaterThan(0);
-      expect(result).toEqual(expect.arrayContaining([1, 2, 3]));
+  test("should render a discount value between 0 and 1", () => {
+    const coupons = getCoupons();
+    coupons.forEach((coupon) => {
+      expect(coupon.discount).not.toBeLessThan(0);
+      expect(coupon.discount).not.toBeGreaterThan(1);
     });
+  });
+});
 
-    test("should return an object", () => {
-      const result = { name: "Holly" };
-      // Loose assertion (too general)
-      // Tight assertion (too specific)
-      expect(result).toEqual({ name: "Holly" });
-      // Better assertion (just right)
-      expect(result).toMatchObject({ name: "Holly" });
-      expect(result).toHaveProperty("name");
-      expect(typeof result.name).toBe("string");
-    });
+describe("calculateDiscount", () => {
+  test("should return discounted price if given valid code", () => {
+    expect(calculateDiscount(10, "SAVE10")).toBe(9);
+    expect(calculateDiscount(10, "SAVE20")).toBe(8);
+  });
+
+  test("should handle non-numeric price", () => {
+    expect(calculateDiscount("10", "SAVE10")).toMatch(/invalid/i);
+  });
+  test;
+
+  test("should handle negative price", () => {
+    expect(calculateDiscount(-10, "SAVE10")).toMatch(/invalid/i);
+  });
+
+  test("should handle invalid discount code", () => {
+    expect(calculateDiscount(10, "INVALID")).toBe(10);
+    expect(calculateDiscount(10, 10)).toMatch(/invalid/i);
+  });
+});
+
+describe("validateUserInput", () => {
+  test("should render success message when using valid username and age", () => {
+    const result = validateUserInput("jane doe", 25);
+    expect(result).toMatch(/success/i);
+  });
+
+  test("should return an error message for invalid username", () => {
+    const result = validateUserInput(5, 25);
+    expect(result).toMatch(/invalid/i);
+  });
+
+  test("should return an error message for usernames under 3 characters", () => {
+    const result = validateUserInput("jo", 25);
+    expect(result).toMatch(/invalid/i);
+  });
+  test("should return an error message for usernames longer than 225 characters", () => {
+    const result = validateUserInput("A".repeat(256), 25);
+    expect(result).toMatch(/invalid/i);
+  });
+
+  test("should return an error message for invalid age", () => {
+    const result = validateUserInput("jane doe", "25");
+    expect(result).toMatch(/invalid/i);
+  });
+
+  test("should return an error message for ages under 18 ", () => {
+    const result = validateUserInput("jane doe", 16);
+    expect(result).toMatch(/invalid/i);
+  });
+
+  test("should return an error message for ages above 100 ", () => {
+    const result = validateUserInput("jane doe", 105);
+    expect(result).toMatch(/invalid/i);
+  });
+
+  test("should return errors messages if both username and age is invalid", () => {
+    const result = validateUserInput("jo", "25");
+    expect(result).toMatch(/invalid username/i);
+    expect(result).toMatch(/invalid age/i);
+  });
+
+  test("should return all error messages in a concatenation", () => {
+    const result = validateUserInput("jo", "25");
+    expect(result).toMatch(/invalid/i, /invalid/i);
   });
 });
