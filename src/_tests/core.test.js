@@ -1,6 +1,13 @@
 import { describe, expect, test } from "vitest";
-import { calculateDiscount, getCoupons, validateUserInput } from "../core";
-
+import {
+  calculateDiscount,
+  canDrive,
+  getCoupons,
+  isPriceInRange,
+  isValidUsername,
+  validateUserInput,
+} from "../core";
+// #region getCoupons
 describe("getCoupons", () => {
   test("should return an array of coupons", () => {
     const coupons = getCoupons();
@@ -35,7 +42,9 @@ describe("getCoupons", () => {
     });
   });
 });
+// #endregion
 
+// #region calculateDiscount
 describe("calculateDiscount", () => {
   test("should return discounted price if given valid code", () => {
     expect(calculateDiscount(10, "SAVE10")).toBe(9);
@@ -56,7 +65,9 @@ describe("calculateDiscount", () => {
     expect(calculateDiscount(10, 10)).toMatch(/invalid/i);
   });
 });
+// #endregion
 
+// #region validateUserInput
 describe("validateUserInput", () => {
   test("should render success message when using valid username and age", () => {
     const result = validateUserInput("jane doe", 25);
@@ -103,3 +114,65 @@ describe("validateUserInput", () => {
     expect(result).toMatch(/invalid/i, /invalid/i);
   });
 });
+// #endregion
+
+// #region isPriceInRange
+describe("isPriceInRange", () => {
+  test("should return false when the price is outside the range", () => {
+    expect(isPriceInRange(-10, 0, 100)).toBeFalsy();
+    expect(isPriceInRange(200, 0, 100)).toBeFalsy();
+  });
+
+  test("should return true when price is equal to the min or to the max", () => {
+    expect(isPriceInRange(0, 0, 100)).toBeTruthy();
+    expect(isPriceInRange(100, 0, 100)).toBeTruthy();
+  });
+
+  test("should return true when the price is within the range", () => {
+    expect(isPriceInRange(50, 0, 100)).toBeTruthy();
+  });
+});
+// #endregion
+
+// #region isValidUsername
+describe("isValidUsername", () => {
+  const minLength = 5;
+  const maxLength = 15;
+  test("should return true if username is within the length constraint", () => {
+    expect(isValidUsername("a".repeat(minLength + 1))).toBe(true);
+  });
+
+  test("should return false when username is too short", () => {
+    expect(isValidUsername("a".repeat(minLength - 1))).toBe(false);
+  });
+
+  test("should return false when username is too long", () => {
+    expect(isValidUsername("a".repeat(maxLength + 1))).toBe(false);
+  });
+
+  test("should return false when entering invalid types", () => {
+    expect(isValidUsername(null)).toBe(false);
+    expect(isValidUsername(undefined)).toBe(false);
+    expect(isValidUsername(1)).toBe(false);
+  });
+});
+// #endregion
+
+// #region canDrive
+describe("canDrive", () => {
+  test("should return error for invalid country code", () => {
+    expect(canDrive(20, "FR")).toMatch(/invalid/i);
+  });
+
+  test.each([
+    { age: 15, country: "US", result: false },
+    { age: 16, country: "US", result: true },
+    { age: 17, country: "US", result: true },
+    { age: 16, country: "UK", result: false },
+    { age: 17, country: "UK", result: true },
+    { age: 18, country: "UK", result: true },
+  ])("should return $result for $age, $country", ({ age, country, result }) => {
+    expect(canDrive(age, country)).toBe(result);
+  });
+});
+// #endregion

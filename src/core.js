@@ -33,12 +33,12 @@ export function calculateDiscount(price, discountCode) {
 // #region validateUserInput
 // Exercise: Positive and negative testing
 export function validateUserInput(username, age) {
-  let errors = [];
+  const errors = [];
 
   if (
     typeof username !== "string" ||
     username.length < 3 ||
-    username.length > 225
+    username.length > 255
   ) {
     errors.push("Invalid username");
   }
@@ -51,7 +51,7 @@ export function validateUserInput(username, age) {
 }
 // #endregion
 
-// #region isValidEmail
+// #region isPriceInRange
 // Lesson: Boundary testing
 export function isPriceInRange(price, min, max) {
   return price >= min && price <= max;
@@ -63,6 +63,8 @@ export function isPriceInRange(price, min, max) {
 export function isValidUsername(username) {
   const minLength = 5;
   const maxLength = 15;
+
+  if (!username) return false;
 
   return username.length >= minLength && username.length <= maxLength;
 }
@@ -87,12 +89,8 @@ export function canDrive(age, countryCode) {
 // #region fetchData
 // Lesson: Testing asynchronous code
 export function fetchData() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const data = [1, 2, 3];
-      resolve(data);
-    });
-  });
+  // eslint-disable-next-line prefer-promise-reject-errors
+  return Promise.reject({ reason: "Operation failed" });
 }
 // #endregion
 
