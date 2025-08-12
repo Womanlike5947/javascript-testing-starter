@@ -1,12 +1,23 @@
 import { vi, test, expect, describe } from "vitest";
-import { getPriceInCurrency, getShippingInfo } from "../mocking";
+import {
+  getPriceInCurrency,
+  getShippingInfo,
+  renderPage,
+  submitOrder,
+  submitOrder,
+} from "../mocking";
 import { getExchangeRate } from "../libs/currency";
 import { getShippingQuote } from "../libs/shipping";
+import { trackPageView } from "../libs/analytics";
+import { charge } from "../libs/payment";
 
 // ⬇️This shall always get executed first (even before the imports - called: Hoisting)
 vi.mock("../libs/currency");
 vi.mock("../libs/shipping");
+vi.mock("../libs/analytics");
+vi.mock("../libs/payment");
 
+// #region test suite
 describe("test suite", () => {
   test("test case", () => {
     const greet = vi.fn();
@@ -32,7 +43,9 @@ describe("test suite", () => {
     expect(result).toBe("ok");
   });
 });
+// #endregion
 
+// #region getPriceInCurrency
 describe("getPriceInCurrency", () => {
   test("should return price in target currency", () => {
     vi.mocked(getExchangeRate).mockReturnValue(1.5); // this will return 1.5, no matter what the argument is
@@ -42,7 +55,9 @@ describe("getPriceInCurrency", () => {
     expect(price).toBe(15);
   });
 });
+// #endregion
 
+// #region getShippingInfo
 describe("getShippingInfo", () => {
   test("should return shipping unavailable if quote cannot be fetched", () => {
     vi.mocked(getShippingQuote).mockReturnValueOnce(null);
@@ -62,3 +77,57 @@ describe("getShippingInfo", () => {
     expect(shippingInfo).toMatch(/shipping cost: \$50 \(2 Days\)/i); // '\' allows you to use symbols
   });
 });
+// #endregion
+
+// #region renderPage
+describe("renderPage", () => {
+  test("should return correct content", async () => {
+    const page = await renderPage();
+
+    expect(page).toMatch(/content/i);
+  });
+
+  test("should call analytics", async () => {
+    await renderPage();
+
+    expect(trackPageView).toHaveBeenCalledWith("/home");
+  });
+});
+// #endregion
+
+// #region submitOrder
+describe("submitOrder", () => {
+  const order = { totalAmount: 10 };
+  const creditCard = { creditCardNumber: 12345 };
+
+  test("should charge the customer", async () => {
+    vi.mocked(charge).mockResolvedValue({ status: "success" });
+    await submitOrder(order, creditCard);
+
+    expect(charge).toBeCalledWith(creditCard, order.totalAmount);
+  });
+
+  test("should return success when payment is successful", async () => {
+    vi.mocked(charge).mockReturnValue({
+      status: "success",
+    });
+
+    const result = await submitOrder(order, creditCard);
+
+    expect(result.success).toBeTruthy();
+    // toEqual instead of toBe as we are using an object
+    expect(result).toEqual({ success: true });
+  });
+
+  test("should return failed when payment is unsuccessful", async () => {
+    vi.mocked(charge).mockReturnValue({
+      status: "failed",
+    });
+
+    const result = await submitOrder(order, creditCard);
+
+    // toEqual instead of toBe as we are using an object
+    expect(result).toEqual({ success: false, error: "payment_error" });
+  });
+});
+// #endregion
