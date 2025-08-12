@@ -14,4 +14,14 @@ describe("test suite", () => {
     expect(greet).toHaveBeenCalled();
     expect(greet).toHaveBeenCalledWith("Holly");
   });
+
+  test("should send the given text message", () => {
+    const sendText = vi.fn();
+
+    sendText.mockReturnValue("ok");
+    const result = sendText("message");
+
+    expect(sendText).toHaveBeenCalledWith("message");
+    expect(result).toBe("ok");
+  });
 });
