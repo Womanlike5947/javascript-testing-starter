@@ -1,4 +1,9 @@
 import { vi, test, expect, describe } from "vitest";
+import { getPriceInCurrency } from "../mocking";
+import { getExchangeRate } from "../libs/currency";
+
+// ⬇️This shall always get executed first (even before the imports - called: Hoisting)
+vi.mock("../libs/currency");
 
 describe("test suite", () => {
   test("test case", () => {
@@ -23,5 +28,15 @@ describe("test suite", () => {
 
     expect(sendText).toHaveBeenCalledWith("message");
     expect(result).toBe("ok");
+  });
+});
+
+describe("getPriceInCurrency", () => {
+  test("should return price in target currency", () => {
+    vi.mocked(getExchangeRate).mockReturnValue(1.5); // this will return 1.5, no matter what the argument is
+
+    const price = getPriceInCurrency(10, "AUD"); // Australian currency
+
+    expect(price).toBe(15);
   });
 });
