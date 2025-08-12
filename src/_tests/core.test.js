@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 import {
   calculateDiscount,
   canDrive,
@@ -6,8 +6,10 @@ import {
   getCoupons,
   isPriceInRange,
   isValidUsername,
+  Stack,
   validateUserInput,
 } from "../core";
+
 // #region getCoupons
 describe("getCoupons", () => {
   test("should return an array of coupons", () => {
@@ -180,7 +182,9 @@ describe("canDrive", () => {
     expect(canDrive(age, country)).toBe(result);
   });
 });
+// #endregion
 
+// #region fetchData
 describe("fetchData", () => {
   test("should return a promise that will resolve to an array of numbers", async () => {
     try {
@@ -191,6 +195,77 @@ describe("fetchData", () => {
       expect(error).toHaveProperty("reason");
       expect(error.reason).toMatch(/fail/i);
     }
+  });
+});
+// #endregion
+
+// #region Stack
+describe("Stack", () => {
+  let stack;
+  beforeEach(() => {
+    stack = new Stack();
+  });
+  test("push should add an item to the stack", () => {
+    stack.push(1);
+
+    expect(stack.size()).toBe(1);
+  });
+
+  test("pop should remove and return the top item from the stack", () => {
+    stack.push(1);
+    stack.push(2);
+
+    const poppedItem = stack.pop();
+
+    expect(poppedItem).toBe(2);
+    expect(stack.size()).toBe(1);
+  });
+
+  test("pop should throw an error if stack is empty", () => {
+    // our test function won't throw an error when using this callback
+    expect(() => stack.pop()).toThrow(/empty/i);
+  });
+
+  test("peek should return the top item from the stack without removing it", () => {
+    stack.push(1);
+    stack.push(2);
+
+    const peekedItem = stack.peek();
+
+    expect(peekedItem).toBe(2);
+    expect(stack.size()).toBe(2);
+  });
+
+  test("peek should throw an error if stack is empty", () => {
+    expect(() => stack.peek()).toThrow(/empty/i);
+    expect(stack.size()).toBe(0);
+  });
+
+  test("isEmpty should returns empty stack", () => {
+    expect(() => stack.isEmpty()).toBeTruthy();
+  });
+
+  test("isEmpty should return false if stack is not empty", () => {
+    stack.push(1);
+
+    expect(stack.isEmpty()).toBeFalsy();
+  });
+
+  test("size should return the length of the stack", () => {
+    stack.push(1);
+    stack.push(2);
+
+    const stackSize = stack.size();
+    expect(stackSize).toBe(2);
+  });
+
+  test("clear should remove all items from the stack", () => {
+    stack.push(1);
+    stack.push(2);
+
+    stack.clear();
+
+    expect(stack.size()).toBe(0);
   });
 });
 // #endregion
