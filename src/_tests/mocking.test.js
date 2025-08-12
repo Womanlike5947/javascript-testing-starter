@@ -3,6 +3,7 @@ import {
   getPriceInCurrency,
   getShippingInfo,
   renderPage,
+  signUp,
   submitOrder,
   submitOrder,
 } from "../mocking";
@@ -10,12 +11,21 @@ import { getExchangeRate } from "../libs/currency";
 import { getShippingQuote } from "../libs/shipping";
 import { trackPageView } from "../libs/analytics";
 import { charge } from "../libs/payment";
+import { sendEmail } from "../libs/email";
 
 // ⬇️This shall always get executed first (even before the imports - called: Hoisting)
 vi.mock("../libs/currency");
 vi.mock("../libs/shipping");
 vi.mock("../libs/analytics");
 vi.mock("../libs/payment");
+vi.mock("../libs/email", async (importOriginal) => {
+  // Using the importOriginal we can import the original isValidEmail function (doesn't have to be named 'importOriginal')
+  const originalModule = await importOriginal();
+  return {
+    ...originalModule,
+    sendEmail: vi.fn(), // mock this function only
+  };
+});
 
 // #region test suite
 describe("test suite", () => {
@@ -128,6 +138,33 @@ describe("submitOrder", () => {
 
     // toEqual instead of toBe as we are using an object
     expect(result).toEqual({ success: false, error: "payment_error" });
+  });
+});
+// #endregion
+
+// #region signUp
+describe("signUp", () => {
+  const validEmail = "name@domain.com";
+
+  test("should return false if email is not valid", async () => {
+    const result = await signUp("a");
+
+    expect(result).toBe(false);
+  });
+
+  test("should return true if email is  valid", async () => {
+    const result = await signUp(validEmail);
+
+    expect(result).toBe(true);
+  });
+
+  test("should send the welcome email if email is valid", async () => {
+    const result = await signUp(validEmail);
+
+    expect(sendEmail).toHaveBeenCalled();
+    const args = vi.mocked(sendEmail).mock.calls[0];
+    expect(args[0]).toBe(validEmail);
+    expect(args[1]).toMatch(/welcome/i);
   });
 });
 // #endregion
