@@ -89,7 +89,6 @@ export function canDrive(age, countryCode) {
 // #region fetchData
 // Lesson: Testing asynchronous code
 export function fetchData() {
-  // eslint-disable-next-line prefer-promise-reject-errors
   return Promise.reject({ reason: "Operation failed" });
   // return new Promise((resolve) => {
   //   setTimeout(() => {

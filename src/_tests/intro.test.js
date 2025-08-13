@@ -1,5 +1,5 @@
 // test and it are aliases for the same function
-import { describe, test, it, expect } from "vitest";
+import { describe, test, expect } from "vitest";
 import { calculateAverage, factorial, fizzBuzz, max } from "../intro";
 
 describe("max", () => {
