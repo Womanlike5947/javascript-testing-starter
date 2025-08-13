@@ -2,6 +2,7 @@ import { vi, test, expect, describe } from "vitest";
 import {
   getPriceInCurrency,
   getShippingInfo,
+  login,
   renderPage,
   signUp,
   submitOrder,
@@ -12,12 +13,15 @@ import { getShippingQuote } from "../libs/shipping";
 import { trackPageView } from "../libs/analytics";
 import { charge } from "../libs/payment";
 import { sendEmail } from "../libs/email";
+import security from "../libs/security";
 
+// #region Mock Functions
 // ⬇️This shall always get executed first (even before the imports - called: Hoisting)
 vi.mock("../libs/currency");
 vi.mock("../libs/shipping");
 vi.mock("../libs/analytics");
 vi.mock("../libs/payment");
+// vi.mock("../libs/security");
 vi.mock("../libs/email", async (importOriginal) => {
   // Using the importOriginal we can import the original isValidEmail function (doesn't have to be named 'importOriginal')
   const originalModule = await importOriginal();
@@ -26,6 +30,7 @@ vi.mock("../libs/email", async (importOriginal) => {
     sendEmail: vi.fn(), // mock this function only
   };
 });
+// #endregion
 
 // #region test suite
 describe("test suite", () => {
@@ -165,6 +170,21 @@ describe("signUp", () => {
     const args = vi.mocked(sendEmail).mock.calls[0];
     expect(args[0]).toBe(validEmail);
     expect(args[1]).toMatch(/welcome/i);
+  });
+});
+// #endregion
+
+// #region login
+describe("login", () => {
+  const validEmail = "name@domain.com";
+
+  test("should email the one-time login code", async () => {
+    const spy = vi.spyOn(security, "generateCode");
+
+    await login(validEmail);
+
+    const securityCode = spy.mock.results[0].value;
+    expect(sendEmail).toHaveBeenCalledWith(validEmail, securityCode.toString());
   });
 });
 // #endregion
