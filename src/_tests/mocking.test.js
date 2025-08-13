@@ -1,5 +1,6 @@
 import { vi, test, expect, describe, beforeEach } from "vitest";
 import {
+  getDiscount,
   getPriceInCurrency,
   getShippingInfo,
   isOnline,
@@ -203,14 +204,43 @@ describe("isOnline", () => {
 
   test("should return true if current hour is within opening hours", () => {
     // setSystemTime - fake timer & simulates a change in the system clock
-    vi.setSystemTime("2024-01-01 08:00");
+    vi.setSystemTime("2025-01-01 08:00");
     expect(isOnline()).toBeTruthy();
 
-    vi.setSystemTime("2024-01-01 15:00");
+    vi.setSystemTime("2025-01-01 15:00");
     expect(isOnline()).toBeTruthy();
 
-    vi.setSystemTime("2024-01-01 19:59");
+    vi.setSystemTime("2025-01-01 19:59");
     expect(isOnline()).toBeTruthy();
+  });
+});
+// #endregion
+
+// #region getDiscount
+describe("getDiscount", () => {
+  test("should return .2 on christmas day", () => {
+    vi.setSystemTime("2025-12-25 12:00");
+    expect(getDiscount()).toBe(0.2);
+
+    vi.setSystemTime("2025-12-25 00:00");
+    expect(getDiscount()).toBe(0.2);
+
+    vi.setSystemTime("2025-12-25 23:59");
+    expect(getDiscount()).toBe(0.2);
+  });
+
+  test("should return 0 on any other day", () => {
+    vi.setSystemTime("2025-01-01 12:00");
+    expect(getDiscount()).toBe(0);
+
+    vi.setSystemTime("2025-12-01 12:00");
+    expect(getDiscount()).toBe(0);
+
+    vi.setSystemTime("2025-11-25 12:00");
+    expect(getDiscount()).toBe(0);
+
+    vi.setSystemTime("2025-12-24 23:59");
+    expect(getDiscount()).toBe(0);
   });
 });
 // #endregion
