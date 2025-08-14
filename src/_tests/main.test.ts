@@ -17,3 +17,5 @@ describe("calculateDiscount", () => {
   });
 });
 // #endregion
+
+// Can I commit this?
