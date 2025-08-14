@@ -57,7 +57,6 @@ describe("calculateDiscount", () => {
   test("should handle non-numeric price", () => {
     expect(calculateDiscount("10", "SAVE10")).toMatch(/invalid/i);
   });
-  test;
 
   test("should handle negative price", () => {
     expect(calculateDiscount(-10, "SAVE10")).toMatch(/invalid/i);
