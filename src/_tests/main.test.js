@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { calculateDiscount } from "../../src/main.js";
+import { calculateDiscount } from "../main.js";
 // #region calculateDiscount
 describe("calculateDiscount", () => {
     test("should return discounted price if given valid code", () => {
